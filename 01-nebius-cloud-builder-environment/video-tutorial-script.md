@@ -10,12 +10,12 @@ installation, and optional Hermes/NemoClaw installation.
 This should feel like a guided build, not a command-reading session. Use the
 companion [written guide](written-guide.md) for exact command blocks. The video
 should explain what each layer is for, show where the official docs live, and
-make the architecture clear enough that students understand why they are
+make the architecture clear enough that participants understand why they are
 running each command.
 
-## Student Outcome
+## Participant Outcome
 
-By the end of the video, the student has:
+By the end of the video, the participant has:
 
 - A Nebius Cloud VM created from their laptop.
 - SSH access into the VM.
@@ -60,7 +60,7 @@ Show this early, then return to it at the end.
 
 ```mermaid
 flowchart LR
-  laptop["Student laptop"]
+  laptop["Participant laptop"]
   cli["Nebius CLI"]
   cloud["Nebius Cloud VM<br/>Ubuntu 24.04"]
   tools["Builder toolchain<br/>Docker, Node, pnpm, GitHub, Vercel"]

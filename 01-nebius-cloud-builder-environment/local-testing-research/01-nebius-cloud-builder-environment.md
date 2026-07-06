@@ -5,7 +5,7 @@
 Provision the Nebius Cloud server and install the builder environment for the
 rest of the series.
 
-## What Students Should Understand
+## What Participants Should Understand
 
 - What the Nebius Cloud server is for.
 - Why Pi Coding Agent is part of the environment.
@@ -28,7 +28,7 @@ Recommended Nebius VM starting point:
 - Boot image family: `ubuntu24.04-driverless`.
 - Boot disk: 50 GiB `network_ssd` to leave room for Docker images and install
   caches.
-- Network: dynamic public IPv4 for the webinar demo so students can SSH in
+- Network: dynamic public IPv4 for the webinar demo so participants can SSH in
   directly. For production-like variants, remove the public IP and use a jump
   server or VPN.
 
@@ -522,7 +522,7 @@ not be used yet for file-inspection tasks. Treat any response that prints
 literal `tool_code`, invents files, or summarizes unseen files as a failed
 tool-calling test.
 
-This is not a student prompt problem. It is a provider/tool-call compatibility
+This is not a prompt-design problem. It is a provider/tool-call compatibility
 gate that must be resolved before the agent can be trusted to act.
 
 Video framing:
@@ -699,7 +699,7 @@ Expected first line:
 Confirmed local result: the sandbox is ready, `/sandbox/workspace` resolves to
 the uploaded webinar repo, and the README is readable from inside the sandbox.
 
-Student-facing checkpoint:
+Audience checkpoint:
 
 ```text
 You are ready to continue when the sandbox is Ready, /sandbox/workspace exists,

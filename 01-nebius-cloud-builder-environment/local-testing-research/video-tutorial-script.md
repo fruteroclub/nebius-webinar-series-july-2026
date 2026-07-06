@@ -10,14 +10,14 @@ Webinar 1: Build the Local Server Environment for the FDE Trainer Agent
 
 ## Recording Goal
 
-By the end of the video, the student should understand the environment shape
+By the end of the video, the participant should understand the environment shape
 and have a working local sandbox:
 
 - Pi Coding Agent is configured to use Nebius Token Factory.
 - Docker is acting as the local server runtime.
 - NemoClaw/NemoHermes is running Hermes Agent in a sandbox.
 - The webinar repo is available inside the sandbox at `/sandbox/workspace`.
-- The student knows not to trust agent output until tool execution is verified.
+- The participant knows not to trust agent output until tool execution is verified.
 
 ## Before Recording
 

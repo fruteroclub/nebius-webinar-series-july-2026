@@ -12,7 +12,8 @@ Status: ready for Nebius DevRel review.
 
 Prepared artifacts:
 
-- [written-guide.md](written-guide.md) - student-facing guide with commands.
+- [written-guide.md](written-guide.md) - participant-facing guide with
+  commands, verification steps, and cleanup.
 - [video-tutorial-script.md](video-tutorial-script.md) - 15-20 minute recording
   script with timing, diagram, screen cues, narration, and edit notes.
 - [local-testing-research/](local-testing-research/) - supporting validation
@@ -30,14 +31,14 @@ Live dry-run status:
   chat through Hermes.
 - The VM was deleted after the run; instance and disk lists returned empty.
 
-Still not re-run on the deleted Nebius VM:
+Pending final fresh-VM verification:
 
 - Pi Coding Agent install/config.
 - GitHub CLI auth.
 - Vercel CLI auth.
 
-Those steps are documented and supported by official docs, but a fresh VM pass
-would be useful before final recording.
+These steps are documented and supported by official docs. A fresh VM pass would
+be useful before final recording.
 
 ## Learning Outcome
 
@@ -56,7 +57,7 @@ By the end of Webinar 1, the participant should understand:
 
 ```mermaid
 flowchart LR
-  laptop["Student laptop"]
+  laptop["Participant laptop"]
   cli["Nebius CLI"]
   vm["Nebius Cloud VM<br/>Ubuntu 24.04"]
   tools["Builder toolchain<br/>Docker, Node, pnpm, GitHub, Vercel"]
@@ -100,7 +101,7 @@ The rough pacing is:
 A raw unedited recording of every install will exceed 20 minutes. Long waits
 should be cut or speed-ramped.
 
-## Product Moments To Make Clear
+## Product Positioning
 
 Nebius Cloud:
 
@@ -138,7 +139,7 @@ Hermes/NemoClaw:
 
 - Is `cpu-e2` / `4vcpu-16gb` the right default recommendation for this opener?
 - Should the guide prefer a different Nebius image, CLI workflow, or console
-  path for webinar participants?
+  path for participants?
 - Is the Token Factory explanation accurate and clear for builders seeing it
   for the first time?
 - Should the optional Hermes/NemoClaw readiness proof stay in Webinar 1, or be

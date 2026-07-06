@@ -1,20 +1,22 @@
 # Nebius Webinar Series July 2026
 
-Public artifact repository for the July 2026 Nebius webinar series.
+Public artifact repository for the July 2026 Nebius webinar series focused on
+building an FDE Trainer agent on the Nebius stack.
 
-The series is the opener for a Builder Growth content program focused on
-Forward Deployed Engineering. The build-along project is an agent that helps
-builders train to become Forward Deployed Engineers: set up infrastructure,
-debug real environments, integrate tools, ship useful workflows, and eventually
-monetize the result.
+The series is the opening motion for a Builder Growth content program focused
+on Forward Deployed Engineering. The build-along project is an agent that helps
+builders practice the operating patterns of Forward Deployed Engineers:
+provisioning infrastructure, debugging live environments, integrating tools,
+shipping useful workflows, and preparing a commercialization path.
 
 ## Current Status
 
 Webinar 1 is drafted and ready for Nebius DevRel review.
 
-What is already in this repository:
+Available review materials:
 
-- Student-facing written guide for provisioning a Nebius Cloud builder server.
+- Participant-facing written guide for provisioning a Nebius Cloud builder
+  server.
 - 15-20 minute video tutorial script with timing, architecture diagram,
   documentation/dashboard cues, narration beats, and editing notes.
 - Local and cloud dry-run notes for Pi Coding Agent, Nebius Token Factory,
@@ -46,9 +48,9 @@ Live dry run completed on July 5, 2026:
 | Path | Purpose |
 | --- | --- |
 | [01-nebius-cloud-builder-environment/README.md](01-nebius-cloud-builder-environment/README.md) | Webinar 1 overview for reviewers and contributors. |
-| [01-nebius-cloud-builder-environment/written-guide.md](01-nebius-cloud-builder-environment/written-guide.md) | Student-facing companion guide with commands and verification steps. |
+| [01-nebius-cloud-builder-environment/written-guide.md](01-nebius-cloud-builder-environment/written-guide.md) | Participant-facing companion guide with commands and verification steps. |
 | [01-nebius-cloud-builder-environment/video-tutorial-script.md](01-nebius-cloud-builder-environment/video-tutorial-script.md) | 15-20 minute recording plan for the video tutorial. |
-| [01-nebius-cloud-builder-environment/local-testing-research/](01-nebius-cloud-builder-environment/local-testing-research/) | Research notes and local validation history. Not the main student path. |
+| [01-nebius-cloud-builder-environment/local-testing-research/](01-nebius-cloud-builder-environment/local-testing-research/) | Research notes and local validation history. Not the main participant path. |
 
 The repository is intentionally guide-first. New directories should be added
 only when a real artifact exists.
@@ -64,12 +66,12 @@ Start here:
 3. Review [written-guide.md](01-nebius-cloud-builder-environment/written-guide.md)
    for technical accuracy and command safety.
 
-Specific feedback requested:
+Feedback requested:
 
 - Is the Nebius Cloud + Token Factory positioning accurate?
 - Should the demo recommend a different VM shape, image, or setup path?
 - Are there preferred Nebius docs, console screens, or calls to action to show?
-- Are there any sponsor, credits, or Fellow-program requirements that should be
+- Are there sponsor, credits, or Fellow-program requirements that should be
   reflected before recording?
 - Should the optional Hermes/NemoClaw readiness proof stay in Webinar 1, or be
   moved entirely to Webinar 2?

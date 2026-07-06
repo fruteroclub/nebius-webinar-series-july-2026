@@ -1,7 +1,7 @@
 # Local Testing Research: Pi, Token Factory, NemoClaw, and Hermes
 
 This directory preserves the local validation work completed before the
-student-facing Webinar 1 path was moved back to Nebius Cloud provisioning.
+participant-facing Webinar 1 path was moved back to Nebius Cloud provisioning.
 
 This is research evidence, not the public Webinar 1 sequence. The public Webinar
 1 files live one directory up and now focus on Nebius Cloud server provisioning,

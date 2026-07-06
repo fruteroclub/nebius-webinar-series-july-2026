@@ -1,6 +1,6 @@
 # How to Set Up the Local Nebius Builder Environment
 
-This is the student-facing companion guide for Webinar 1.
+This is the participant-facing companion guide for Webinar 1.
 
 The goal is to set up the builder environment used by the rest of the FDE
 Trainer series. In this local pass, your laptop is the server and Docker runs
