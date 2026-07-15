@@ -276,35 +276,48 @@ test -n "$NEBIUS_CLOUD_INIT" && echo "Cloud-init user data is loaded"
 Why Node 22: Webinar 2 will install NemoClaw, and the current NemoClaw
 prerequisites require Node.js 22.16+ and npm 10+.
 
-## Step 6: Find a Subnet
+## Step 6: Use the Default Subnet
 
-A subnet is the Nebius network segment where the VM will be attached. The VM
-needs a subnet so it can receive network connectivity, including the public IP
-we use for SSH in this webinar.
+A subnet is the Nebius network segment where the VM will be attached. Nebius
+requires a `subnet_id` in the VM network interface, so the create command needs
+one.
 
-Run locally to list the subnets in your active Nebius project:
+For the webinar path, use the project's default subnet. Most projects have one
+ready-to-use subnet, so this should be automatic.
+
+Run locally:
+
+```bash
+export NEBIUS_SUBNET_ID="$(
+  nebius vpc subnet list --format json \
+    | jq -r '.items[] | select(.status.state == "READY") | .metadata.id' \
+    | head -n 1
+)"
+
+if [ -n "$NEBIUS_SUBNET_ID" ]; then
+  echo "OK: using subnet $NEBIUS_SUBNET_ID"
+else
+  echo "FAIL: no READY subnet found in this Nebius project"
+fi
+```
+
+If this prints `OK`, continue to Step 7.
+
+If it prints `FAIL`, inspect the project subnets:
 
 ```bash
 nebius vpc subnet list --format json | jq
 ```
 
-Look for an item with:
+Look for a subnet with:
 
 - `metadata.id` - this is the value you need.
 - `metadata.name` - a human-readable name, often something like
   `default-subnet-...`.
 - `status.state` - use a subnet in `READY` state.
 
-If you see only one subnet, use it:
-
-```bash
-export NEBIUS_SUBNET_ID="$(
-  nebius vpc subnet list --format json | jq -r '.items[0].metadata.id'
-)"
-```
-
-If you see more than one subnet, copy the `metadata.id` of the subnet you want
-to use. It usually starts with `vpcsubnet-`:
+If there are multiple READY subnets and you need to choose a specific one, copy
+its `metadata.id`. It usually starts with `vpcsubnet-`:
 
 ```bash
 export NEBIUS_SUBNET_ID="<subnet-id>"
