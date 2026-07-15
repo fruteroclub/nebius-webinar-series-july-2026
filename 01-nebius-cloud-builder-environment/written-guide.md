@@ -154,7 +154,21 @@ export NEBIUS_SSH_PUBLIC_KEY="$HOME/.ssh/id_ed25519.pub"
 
 Run locally.
 
-Cloud-init creates the server user and installs the baseline OS packages.
+Cloud-init is the setup script Nebius runs inside the VM the first time the VM
+boots.
+
+In this guide, cloud-init does four things:
+
+- Creates the Linux user you will SSH into, using `NEBIUS_VM_USER` from Step 3.
+- Adds your SSH public key from Step 4 so you can connect without a password.
+- Installs the baseline server packages: Docker, Git, jq, curl, unzip, wget,
+  and `binutils`.
+- Installs Node.js 22 and pnpm for the builder toolchain.
+
+You do not run this file manually inside the VM. You create it locally, pass it
+to Nebius when creating the VM, and Nebius applies it during first boot.
+
+Create the cloud-init file:
 
 ```bash
 cat > /tmp/nebius-fde-cloud-init.yaml <<EOF
@@ -183,8 +197,39 @@ runcmd:
   - apt-get install -y nodejs
   - npm install -g pnpm
 EOF
+```
 
+Quickly inspect the file before continuing:
+
+```bash
+sed -n '1,120p' /tmp/nebius-fde-cloud-init.yaml
+```
+
+You should see:
+
+- `#cloud-config` at the top.
+- A user named whatever `echo "$NEBIUS_VM_USER"` prints, usually `fde`.
+- Your SSH public key under `ssh_authorized_keys`.
+- Package names like `docker.io`, `jq`, `binutils`, and `git`.
+
+Do not continue if the SSH key line is empty.
+
+Now convert the file into a single JSON string for the Nebius CLI:
+
+```bash
 export NEBIUS_CLOUD_INIT="$(jq -Rrs '.' < /tmp/nebius-fde-cloud-init.yaml)"
+```
+
+Why this conversion exists:
+
+The next command passes cloud-init through the `--cloud-init-user-data` CLI
+flag. The file has multiple lines, so `jq -Rrs '.'` safely turns the whole file
+into one escaped string that the CLI can accept.
+
+Verify that the variable is loaded:
+
+```bash
+test -n "$NEBIUS_CLOUD_INIT" && echo "Cloud-init user data is loaded"
 ```
 
 Why Node 22: Webinar 2 will install NemoClaw, and the current NemoClaw
@@ -192,25 +237,50 @@ prerequisites require Node.js 22.16+ and npm 10+.
 
 ## Step 6: Find a Subnet
 
-Run locally:
+A subnet is the Nebius network segment where the VM will be attached. The VM
+needs a subnet so it can receive network connectivity, including the public IP
+we use for SSH in this webinar.
+
+Run locally to list the subnets in your active Nebius project:
 
 ```bash
 nebius vpc subnet list --format json | jq
 ```
 
-Pick the subnet you want to use:
+Look for an item with:
 
-```bash
-export NEBIUS_SUBNET_ID="<subnet-id>"
-```
+- `metadata.id` - this is the value you need.
+- `metadata.name` - a human-readable name, often something like
+  `default-subnet-...`.
+- `status.state` - use a subnet in `READY` state.
 
-If the project has only one subnet, this may work:
+If you see only one subnet, use it:
 
 ```bash
 export NEBIUS_SUBNET_ID="$(
   nebius vpc subnet list --format json | jq -r '.items[0].metadata.id'
 )"
 ```
+
+If you see more than one subnet, copy the `metadata.id` of the subnet you want
+to use. It usually starts with `vpcsubnet-`:
+
+```bash
+export NEBIUS_SUBNET_ID="<subnet-id>"
+```
+
+Verify the value before creating the VM:
+
+```bash
+echo "$NEBIUS_SUBNET_ID"
+```
+
+If the output is empty, stop and fix the subnet value before continuing. The VM
+creation command in Step 7 will fail without a valid subnet.
+
+If `nebius vpc subnet list` returns no subnets, the Nebius project does not have
+networking ready yet. Create or request a VPC subnet in the Nebius console
+before continuing.
 
 Instructor verification note: the live run used the project's default subnet in
 `READY` state.
