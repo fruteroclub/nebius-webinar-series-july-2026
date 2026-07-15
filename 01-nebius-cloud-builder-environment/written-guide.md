@@ -595,16 +595,55 @@ EOF
 chmod 600 "$HOME/.pi/agent/settings.json"
 ```
 
-Smoke test:
+Verify that Pi can see the Nebius config:
 
 ```bash
-pi --no-tools --no-context-files --no-session -p \
-  "Say the provider and model you are configured to use, then stop."
+jq -r '"provider=\(.defaultProvider)\nmodel=\(.defaultModel)"' \
+  "$HOME/.pi/agent/settings.json"
+
+jq -e '.providers["nebius-token-factory"].models[]
+  | select(.id == "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B")' \
+  "$HOME/.pi/agent/models.json" >/dev/null \
+  && echo "OK: Nebius model is present in Pi models.json"
+
+pi --list-models nebius | sed -n '1,40p'
 ```
 
-Expected: Pi reports the Nebius Token Factory provider/model. If it reports an
-OpenAI model, check for an ambient `OPENAI_API_KEY` and re-check
-`~/.pi/agent/settings.json`.
+Expected:
+
+- `provider=nebius-token-factory`
+- `model=nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`
+- A `pi --list-models` result that includes the Nebius Token Factory model.
+
+Smoke test with the Nebius model selected explicitly:
+
+```bash
+pi --model "nebius-token-factory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B" \
+  --no-tools \
+  --no-context-files \
+  --no-session \
+  -p "Reply exactly: pi-nebius-ready"
+```
+
+Expected:
+
+```text
+pi-nebius-ready
+```
+
+Do not ask the model which provider it is using as the smoke test. Models can
+guess or hallucinate that answer. The reliable checks are:
+
+- `~/.pi/agent/settings.json` has `defaultProvider` set to
+  `nebius-token-factory`.
+- `pi --list-models nebius` shows the Nebius model.
+- `pi --model "nebius-token-factory/..."` returns a normal answer.
+
+For the live webinar, start Pi with the model selected explicitly:
+
+```bash
+pi --model "nebius-token-factory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"
+```
 
 ## Step 14: Install GitHub CLI
 

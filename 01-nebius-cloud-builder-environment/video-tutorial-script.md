@@ -526,8 +526,22 @@ Screen action:
 Run a minimal Pi verification if time allows:
 
 ```bash
-pi --no-tools --no-context-files --no-session -p "Reply exactly: pi-ready"
+jq -r '"provider=\(.defaultProvider)\nmodel=\(.defaultModel)"' \
+  "$HOME/.pi/agent/settings.json"
+
+pi --list-models nebius | sed -n '1,40p'
+
+pi --model "nebius-token-factory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B" \
+  --no-tools \
+  --no-context-files \
+  --no-session \
+  -p "Reply exactly: pi-nebius-ready"
 ```
+
+"For the verification, I do not ask the model to identify its own provider.
+That is just another model answer, and it can be wrong. I verify the config
+file, list the configured Nebius model, and then run Pi with the Nebius model
+selected explicitly."
 
 Cut note:
 
