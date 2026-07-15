@@ -150,6 +150,24 @@ ssh-keygen -t ed25519 -C "nebius-fde-webinar"
 export NEBIUS_SSH_PUBLIC_KEY="$HOME/.ssh/id_ed25519.pub"
 ```
 
+Verify that the path points to a readable public key before continuing:
+
+```bash
+test -n "$NEBIUS_SSH_PUBLIC_KEY" || {
+  echo "NEBIUS_SSH_PUBLIC_KEY is not set"
+  exit 1
+}
+
+test -r "$NEBIUS_SSH_PUBLIC_KEY" || {
+  echo "SSH public key not found or not readable: $NEBIUS_SSH_PUBLIC_KEY"
+  exit 1
+}
+
+head -n 1 "$NEBIUS_SSH_PUBLIC_KEY"
+```
+
+The output should start with `ssh-ed25519`, `ssh-rsa`, or `ecdsa-`.
+
 ## Step 5: Create Cloud-Init User Data
 
 Run locally.
@@ -168,7 +186,30 @@ In this guide, cloud-init does four things:
 You do not run this file manually inside the VM. You create it locally, pass it
 to Nebius when creating the VM, and Nebius applies it during first boot.
 
-Create the cloud-init file:
+First run this preflight check. It fails early if the VM user or SSH public key
+from the previous steps is missing:
+
+```bash
+: "${NEBIUS_VM_USER:?Set NEBIUS_VM_USER first, usually: export NEBIUS_VM_USER=\"fde\"}"
+: "${NEBIUS_SSH_PUBLIC_KEY:?Set NEBIUS_SSH_PUBLIC_KEY first, for example: export NEBIUS_SSH_PUBLIC_KEY=\"$HOME/.ssh/id_ed25519.pub\"}"
+
+test -r "$NEBIUS_SSH_PUBLIC_KEY" || {
+  echo "SSH public key not found or not readable: $NEBIUS_SSH_PUBLIC_KEY"
+  exit 1
+}
+
+NEBIUS_SSH_PUBLIC_KEY_CONTENT="$(head -n 1 "$NEBIUS_SSH_PUBLIC_KEY")"
+
+case "$NEBIUS_SSH_PUBLIC_KEY_CONTENT" in
+  ssh-*|ecdsa-*) ;;
+  *)
+    echo "The file does not look like an SSH public key: $NEBIUS_SSH_PUBLIC_KEY"
+    exit 1
+    ;;
+esac
+```
+
+Then create the cloud-init file:
 
 ```bash
 cat > /tmp/nebius-fde-cloud-init.yaml <<EOF
@@ -179,7 +220,7 @@ users:
     shell: /bin/bash
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys:
-      - $(cat "$NEBIUS_SSH_PUBLIC_KEY")
+      - ${NEBIUS_SSH_PUBLIC_KEY_CONTENT}
 package_update: true
 packages:
   - ca-certificates
