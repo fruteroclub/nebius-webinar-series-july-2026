@@ -507,14 +507,61 @@ options such as `nvidia/nemotron-3-super-120b-a12b`,
 `nvidia/Nemotron-3-Ultra-550b-a55b` are better candidates for quality demos
 after the basic install path is proven.
 
-## Step 12: Install Pi Coding Agent
+## Step 12: Configure npm Global Installs and Install Pi Coding Agent
 
 Run inside the server.
 
 Pi is a global CLI, so we use npm here. For project dependencies, use pnpm.
 
+Official Pi docs:
+
+https://pi.dev/docs/latest
+
+On the Nebius VM, npm may try to install global packages into
+`/usr/lib/node_modules`. The `fde` user should not need `sudo` for workshop CLI
+tools, so first configure npm to use a directory inside your home folder.
+
+Do not run `sudo apt install pi`. Ubuntu's `pi` package is unrelated to the Pi
+Coding Agent.
+
+```bash
+mkdir -p "$HOME/.local/share/npm-global"
+npm config set prefix "$HOME/.local/share/npm-global"
+
+case ":$PATH:" in
+  *":$HOME/.local/share/npm-global/bin:"*) ;;
+  *) export PATH="$HOME/.local/share/npm-global/bin:$PATH" ;;
+esac
+
+grep -qxF 'export PATH="$HOME/.local/share/npm-global/bin:$PATH"' "$HOME/.bashrc" \
+  || printf '\nexport PATH="$HOME/.local/share/npm-global/bin:$PATH"\n' >> "$HOME/.bashrc"
+
+npm config get prefix
+```
+
+Expected output:
+
+```text
+/home/fde/.local/share/npm-global
+```
+
+Now install Pi:
+
 ```bash
 npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+hash -r
+pi --version
+```
+
+If npm still tries to write to `/usr/lib/node_modules`, rerun the npm prefix
+commands above and confirm that `npm config get prefix` prints the path inside
+your home folder.
+
+If the install succeeds but `pi` is not found, refresh the current shell path:
+
+```bash
+source "$HOME/.bashrc"
+hash -r
 pi --version
 ```
 
@@ -646,18 +693,19 @@ Official docs:
 
 https://vercel.com/docs/cli
 
-Vercel's current docs show `pnpm i -g vercel`. For this webinar environment,
-we use npm for global CLI tools and pnpm for project dependencies.
+Vercel documents global CLI install options. For this webinar environment, use
+npm for global CLI tools and pnpm for project dependencies.
+
+This uses the same user-owned npm global prefix from Step 12.
 
 ```bash
+npm config get prefix
+echo "$PATH" | tr ':' '\n' | grep -F "$HOME/.local/share/npm-global/bin" \
+  || echo "WARN: user npm global bin is not on PATH; run the Step 12 prefix setup again"
+
 npm install -g vercel
+hash -r
 vercel --version
-```
-
-If npm install fails, use Vercel's documented command:
-
-```bash
-pnpm i -g vercel
 ```
 
 ## Step 17: Authenticate Vercel CLI

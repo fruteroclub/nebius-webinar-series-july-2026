@@ -202,11 +202,9 @@ google/gemma-3-27b-it
 
 ## Step 3: Install Pi and Configure the Nebius Provider
 
-Pi is a global CLI, so install it using the official npm path if needed:
-
-```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-```
+Pi is a global CLI. For the Nebius VM path, use the canonical install sequence
+in [`../written-guide.md`](../written-guide.md), Step 12. It configures npm to
+install global CLIs into the user's home directory before installing Pi.
 
 Official docs:
 

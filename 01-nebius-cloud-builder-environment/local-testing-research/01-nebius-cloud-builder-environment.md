@@ -100,11 +100,9 @@ Official docs:
 
 - [Pi quickstart](https://pi.dev/docs/latest)
 
-If installing from scratch, use the official global CLI install path:
-
-```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-```
+If installing from scratch on the Nebius VM, use the canonical install sequence
+in [`../written-guide.md`](../written-guide.md), Step 12. It configures npm to
+install global CLIs into the user's home directory before installing Pi.
 
 ## Step 5: Configure Nebius Token Factory
 
