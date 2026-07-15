@@ -535,9 +535,8 @@ pi --version
 Run inside the server:
 
 Pi config files live in the `fde` user's home directory. Do not use `sudo` for
-this step.
-
-Create the Pi config directory and `models.json`:
+this step. This config makes Nebius Token Factory and Nemotron the default Pi
+model.
 
 ```bash
 install -d -m 700 "$HOME/.pi/agent"
@@ -574,12 +573,6 @@ cat > "$HOME/.pi/agent/models.json" <<'EOF'
 EOF
 
 chmod 600 "$HOME/.pi/agent/models.json"
-```
-
-Create `settings.json`:
-
-```bash
-install -d -m 700 "$HOME/.pi/agent"
 
 cat > "$HOME/.pi/agent/settings.json" <<'EOF'
 {
@@ -595,54 +588,31 @@ EOF
 chmod 600 "$HOME/.pi/agent/settings.json"
 ```
 
-Verify that Pi can see the Nebius config:
+Quick check:
 
 ```bash
-jq -r '"provider=\(.defaultProvider)\nmodel=\(.defaultModel)"' \
+jq -r '"defaultProvider=\(.defaultProvider)\ndefaultModel=\(.defaultModel)"' \
   "$HOME/.pi/agent/settings.json"
 
-jq -e '.providers["nebius-token-factory"].models[]
-  | select(.id == "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B")' \
-  "$HOME/.pi/agent/models.json" >/dev/null \
-  && echo "OK: Nebius model is present in Pi models.json"
-
-pi --list-models nebius | sed -n '1,40p'
+pi --list-models nemotron | sed -n '1,20p'
 ```
 
 Expected:
 
-- `provider=nebius-token-factory`
-- `model=nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`
-- A `pi --list-models` result that includes the Nebius Token Factory model.
+- `defaultProvider=nebius-token-factory`
+- `defaultModel=nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B`
+- The model list includes the Nemotron model.
 
-Smoke test with the Nebius model selected explicitly:
+Start Pi normally:
 
 ```bash
-pi --model "nebius-token-factory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B" \
-  --no-tools \
-  --no-context-files \
-  --no-session \
-  -p "Reply exactly: pi-nebius-ready"
+pi
 ```
 
-Expected:
+The startup screen should show:
 
 ```text
-pi-nebius-ready
-```
-
-Do not ask the model which provider it is using as the smoke test. Models can
-guess or hallucinate that answer. The reliable checks are:
-
-- `~/.pi/agent/settings.json` has `defaultProvider` set to
-  `nebius-token-factory`.
-- `pi --list-models nebius` shows the Nebius model.
-- `pi --model "nebius-token-factory/..."` returns a normal answer.
-
-For the live webinar, start Pi with the model selected explicitly:
-
-```bash
-pi --model "nebius-token-factory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"
+Model scope: nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B
 ```
 
 ## Step 14: Install GitHub CLI

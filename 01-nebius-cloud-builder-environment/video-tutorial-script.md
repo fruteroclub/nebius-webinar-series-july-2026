@@ -526,22 +526,16 @@ Screen action:
 Run a minimal Pi verification if time allows:
 
 ```bash
-jq -r '"provider=\(.defaultProvider)\nmodel=\(.defaultModel)"' \
+jq -r '"defaultProvider=\(.defaultProvider)\ndefaultModel=\(.defaultModel)"' \
   "$HOME/.pi/agent/settings.json"
 
-pi --list-models nebius | sed -n '1,40p'
-
-pi --model "nebius-token-factory/nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B" \
-  --no-tools \
-  --no-context-files \
-  --no-session \
-  -p "Reply exactly: pi-nebius-ready"
+pi --list-models nemotron | sed -n '1,20p'
+pi
 ```
 
-"For the verification, I do not ask the model to identify its own provider.
-That is just another model answer, and it can be wrong. I verify the config
-file, list the configured Nebius model, and then run Pi with the Nebius model
-selected explicitly."
+"The config makes Nebius Token Factory and Nemotron the default. When Pi opens,
+the startup screen should show `Model scope:
+nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` without passing a model flag."
 
 Cut note:
 
