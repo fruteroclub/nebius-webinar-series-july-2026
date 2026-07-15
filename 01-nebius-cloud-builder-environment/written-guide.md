@@ -150,23 +150,24 @@ ssh-keygen -t ed25519 -C "nebius-fde-webinar"
 export NEBIUS_SSH_PUBLIC_KEY="$HOME/.ssh/id_ed25519.pub"
 ```
 
-Verify that the path points to a readable public key before continuing:
+Verify that the path points to a readable public key before continuing.
+
+This check should print `OK`, then the first line of your public key. It should
+not close your terminal.
 
 ```bash
-test -n "$NEBIUS_SSH_PUBLIC_KEY" || {
-  echo "NEBIUS_SSH_PUBLIC_KEY is not set"
-  exit 1
-}
-
-test -r "$NEBIUS_SSH_PUBLIC_KEY" || {
-  echo "SSH public key not found or not readable: $NEBIUS_SSH_PUBLIC_KEY"
-  exit 1
-}
-
-head -n 1 "$NEBIUS_SSH_PUBLIC_KEY"
+if [ -z "${NEBIUS_SSH_PUBLIC_KEY:-}" ]; then
+  echo "FAIL: NEBIUS_SSH_PUBLIC_KEY is not set"
+elif [ ! -r "$NEBIUS_SSH_PUBLIC_KEY" ]; then
+  echo "FAIL: SSH public key not found or not readable: $NEBIUS_SSH_PUBLIC_KEY"
+else
+  echo "OK: SSH public key is readable"
+  head -n 1 "$NEBIUS_SSH_PUBLIC_KEY"
+fi
 ```
 
 The output should start with `ssh-ed25519`, `ssh-rsa`, or `ecdsa-`.
+If you see `FAIL`, fix Step 4 before continuing.
 
 ## Step 5: Create Cloud-Init User Data
 
@@ -186,33 +187,36 @@ In this guide, cloud-init does four things:
 You do not run this file manually inside the VM. You create it locally, pass it
 to Nebius when creating the VM, and Nebius applies it during first boot.
 
-First run this preflight check. It fails early if the VM user or SSH public key
-from the previous steps is missing:
+First run this preflight check. It verifies that the VM user and SSH public key
+from the previous steps are present. It prints `OK` when the values are ready
+and `FAIL` when something needs to be fixed.
 
 ```bash
-: "${NEBIUS_VM_USER:?Set NEBIUS_VM_USER first, usually: export NEBIUS_VM_USER=\"fde\"}"
-: "${NEBIUS_SSH_PUBLIC_KEY:?Set NEBIUS_SSH_PUBLIC_KEY first, for example: export NEBIUS_SSH_PUBLIC_KEY=\"$HOME/.ssh/id_ed25519.pub\"}"
+if [ -z "${NEBIUS_VM_USER:-}" ]; then
+  echo "FAIL: NEBIUS_VM_USER is not set. Run: export NEBIUS_VM_USER=\"fde\""
+elif [ -z "${NEBIUS_SSH_PUBLIC_KEY:-}" ]; then
+  echo "FAIL: NEBIUS_SSH_PUBLIC_KEY is not set. Run: export NEBIUS_SSH_PUBLIC_KEY=\"$HOME/.ssh/id_ed25519.pub\""
+elif [ ! -r "$NEBIUS_SSH_PUBLIC_KEY" ]; then
+  echo "FAIL: SSH public key not found or not readable: $NEBIUS_SSH_PUBLIC_KEY"
+else
+  NEBIUS_SSH_PUBLIC_KEY_CONTENT="$(head -n 1 "$NEBIUS_SSH_PUBLIC_KEY")"
 
-test -r "$NEBIUS_SSH_PUBLIC_KEY" || {
-  echo "SSH public key not found or not readable: $NEBIUS_SSH_PUBLIC_KEY"
-  exit 1
-}
-
-NEBIUS_SSH_PUBLIC_KEY_CONTENT="$(head -n 1 "$NEBIUS_SSH_PUBLIC_KEY")"
-
-case "$NEBIUS_SSH_PUBLIC_KEY_CONTENT" in
-  ssh-*|ecdsa-*) ;;
-  *)
-    echo "The file does not look like an SSH public key: $NEBIUS_SSH_PUBLIC_KEY"
-    exit 1
-    ;;
-esac
+  case "$NEBIUS_SSH_PUBLIC_KEY_CONTENT" in
+    ssh-*|ecdsa-*) echo "OK: cloud-init inputs are ready" ;;
+    *) echo "FAIL: file does not look like an SSH public key: $NEBIUS_SSH_PUBLIC_KEY" ;;
+  esac
+fi
 ```
+
+Do not continue until this prints `OK: cloud-init inputs are ready`.
 
 Then create the cloud-init file:
 
 ```bash
-cat > /tmp/nebius-fde-cloud-init.yaml <<EOF
+if [ -z "${NEBIUS_SSH_PUBLIC_KEY_CONTENT:-}" ]; then
+  echo "FAIL: NEBIUS_SSH_PUBLIC_KEY_CONTENT is not set. Run the Step 5 preflight check first."
+else
+  cat > /tmp/nebius-fde-cloud-init.yaml <<EOF
 #cloud-config
 users:
   - name: ${NEBIUS_VM_USER}
@@ -238,6 +242,8 @@ runcmd:
   - apt-get install -y nodejs
   - npm install -g pnpm
 EOF
+  echo "OK: wrote /tmp/nebius-fde-cloud-init.yaml"
+fi
 ```
 
 Quickly inspect the file before continuing:
@@ -705,21 +711,25 @@ test -n "$NEBIUS_API_KEY" && echo "NEBIUS_API_KEY is loaded"
 Install Hermes through NemoClaw:
 
 ```bash
-TOKEN="${NEBIUS_API_KEY:?Set NEBIUS_API_KEY first}"
+TOKEN="${NEBIUS_API_KEY:-}"
 
-curl -fsSL https://www.nvidia.com/nemoclaw.sh | \
-  NEMOCLAW_AGENT=hermes \
-  NEMOCLAW_NON_INTERACTIVE=1 \
-  NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE=1 \
-  NEMOCLAW_REASONING=true \
-  NEMOCLAW_PROVIDER=custom \
-  NEMOCLAW_ENDPOINT_URL=https://api.tokenfactory.nebius.com/v1/ \
-  NEMOCLAW_MODEL="${NEBIUS_TF_MODEL:-nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B}" \
-  NEMOCLAW_SANDBOX_NAME=fde-hermes-nebius \
-  NEMOCLAW_WEB_SEARCH_PROVIDER=none \
-  COMPATIBLE_API_KEY="$TOKEN" \
-  NEMOCLAW_YES=1 \
-  bash
+if [ -z "$TOKEN" ]; then
+  echo "FAIL: NEBIUS_API_KEY is not loaded. Run Step 11 before installing Hermes."
+else
+  curl -fsSL https://www.nvidia.com/nemoclaw.sh | \
+    NEMOCLAW_AGENT=hermes \
+    NEMOCLAW_NON_INTERACTIVE=1 \
+    NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE=1 \
+    NEMOCLAW_REASONING=true \
+    NEMOCLAW_PROVIDER=custom \
+    NEMOCLAW_ENDPOINT_URL=https://api.tokenfactory.nebius.com/v1/ \
+    NEMOCLAW_MODEL="${NEBIUS_TF_MODEL:-nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B}" \
+    NEMOCLAW_SANDBOX_NAME=fde-hermes-nebius \
+    NEMOCLAW_WEB_SEARCH_PROVIDER=none \
+    COMPATIBLE_API_KEY="$TOKEN" \
+    NEMOCLAW_YES=1 \
+    bash
+fi
 
 unset TOKEN
 ```

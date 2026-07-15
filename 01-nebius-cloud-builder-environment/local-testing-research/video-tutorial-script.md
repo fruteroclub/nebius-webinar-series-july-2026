@@ -369,23 +369,23 @@ Run:
 ```bash
 TOKEN="$(security find-generic-password -w -s nebius-token-factory-api-key)"
 
-[ -n "$TOKEN" ] || {
-  echo "Missing Nebius Token Factory API key"
-  exit 1
-}
-
-curl -fsSL https://www.nvidia.com/nemoclaw.sh | \
-  NEMOCLAW_AGENT=hermes \
-  NEMOCLAW_NON_INTERACTIVE=1 \
-  NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE=1 \
-  NEMOCLAW_PROVIDER=custom \
-  NEMOCLAW_ENDPOINT_URL=https://api.tokenfactory.nebius.com/v1/ \
-  NEMOCLAW_MODEL=google/gemma-3-27b-it \
-  NEMOCLAW_SANDBOX_NAME=fde-hermes-local \
-  NEMOCLAW_WEB_SEARCH_PROVIDER=none \
-  COMPATIBLE_API_KEY="$TOKEN" \
-  NEMOCLAW_YES=1 \
-  bash
+if [ -z "$TOKEN" ]; then
+  echo "FAIL: Missing Nebius Token Factory API key"
+  echo "Stop here and add the key to macOS Keychain before running the installer."
+else
+  curl -fsSL https://www.nvidia.com/nemoclaw.sh | \
+    NEMOCLAW_AGENT=hermes \
+    NEMOCLAW_NON_INTERACTIVE=1 \
+    NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE=1 \
+    NEMOCLAW_PROVIDER=custom \
+    NEMOCLAW_ENDPOINT_URL=https://api.tokenfactory.nebius.com/v1/ \
+    NEMOCLAW_MODEL=google/gemma-3-27b-it \
+    NEMOCLAW_SANDBOX_NAME=fde-hermes-local \
+    NEMOCLAW_WEB_SEARCH_PROVIDER=none \
+    COMPATIBLE_API_KEY="$TOKEN" \
+    NEMOCLAW_YES=1 \
+    bash
+fi
 
 unset TOKEN
 ```
