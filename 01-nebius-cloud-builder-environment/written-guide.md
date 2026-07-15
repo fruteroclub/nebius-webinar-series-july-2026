@@ -129,45 +129,39 @@ Token Factory, not from a local GPU.
 If `cpu-e2` hits a quota/capacity issue, use `cpu-d3` with the same
 `4vcpu-16gb` preset.
 
-## Step 4: Prepare SSH Access
+## Step 4: Confirm Your SSH Public Key
 
-Run locally:
+Run locally.
 
-```bash
-ls ~/.ssh/*.pub
-```
+You need an SSH public key because Step 5 puts that key into the VM's
+cloud-init file. That is what allows your laptop to SSH into the Nebius VM after
+it is created.
 
-If you already have a public key, use it:
+If you already have an SSH key, this step is only a quick confirmation. In the
+live dry run, the local machine already had `~/.ssh/id_ed25519.pub`, so this
+step took only a few seconds.
 
-```bash
-export NEBIUS_SSH_PUBLIC_KEY="$HOME/.ssh/id_ed25519.pub"
-```
-
-If you do not have one, create it:
+Run this check:
 
 ```bash
-ssh-keygen -t ed25519 -C "nebius-fde-webinar"
-export NEBIUS_SSH_PUBLIC_KEY="$HOME/.ssh/id_ed25519.pub"
-```
+export NEBIUS_SSH_PUBLIC_KEY="${NEBIUS_SSH_PUBLIC_KEY:-$HOME/.ssh/id_ed25519.pub}"
 
-Verify that the path points to a readable public key before continuing.
-
-This check should print `OK`, then the first line of your public key. It should
-not close your terminal.
-
-```bash
-if [ -z "${NEBIUS_SSH_PUBLIC_KEY:-}" ]; then
-  echo "FAIL: NEBIUS_SSH_PUBLIC_KEY is not set"
-elif [ ! -r "$NEBIUS_SSH_PUBLIC_KEY" ]; then
-  echo "FAIL: SSH public key not found or not readable: $NEBIUS_SSH_PUBLIC_KEY"
-else
-  echo "OK: SSH public key is readable"
+if [ -r "$NEBIUS_SSH_PUBLIC_KEY" ]; then
+  echo "OK: using SSH public key: $NEBIUS_SSH_PUBLIC_KEY"
   head -n 1 "$NEBIUS_SSH_PUBLIC_KEY"
+else
+  echo "No SSH public key found at: $NEBIUS_SSH_PUBLIC_KEY"
+  echo "Create one with:"
+  echo 'ssh-keygen -t ed25519 -C "nebius-fde-webinar"'
+  echo 'export NEBIUS_SSH_PUBLIC_KEY="$HOME/.ssh/id_ed25519.pub"'
 fi
 ```
 
-The output should start with `ssh-ed25519`, `ssh-rsa`, or `ecdsa-`.
-If you see `FAIL`, fix Step 4 before continuing.
+If the command prints `OK`, continue to Step 5.
+
+If it prints `No SSH public key found`, run the two commands it prints, then run
+the check again. The public key output should start with `ssh-ed25519`,
+`ssh-rsa`, or `ecdsa-`.
 
 ## Step 5: Create Cloud-Init User Data
 
