@@ -494,7 +494,7 @@ Run inside the server:
 sudo npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 hash -r
 pi --version
-mkdir -p "$HOME/.pi/agent"
+install -d -m 700 "$HOME/.pi/agent"
 ```
 
 Narration:
@@ -511,7 +511,8 @@ Agent."
 
 "For model configuration, we point Pi at Token Factory through an
 OpenAI-compatible provider. The API key should come from the environment, not a
-hard-coded config file committed to a repo."
+hard-coded config file committed to a repo. These config files live under
+`~/.pi/agent`, so do not use sudo when creating them."
 
 Screen action:
 

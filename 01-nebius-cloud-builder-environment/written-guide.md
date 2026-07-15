@@ -534,13 +534,14 @@ pi --version
 
 Run inside the server:
 
-```bash
-mkdir -p "$HOME/.pi/agent"
-```
+Pi config files live in the `fde` user's home directory. Do not use `sudo` for
+this step.
 
-Create `models.json`:
+Create the Pi config directory and `models.json`:
 
 ```bash
+install -d -m 700 "$HOME/.pi/agent"
+
 cat > "$HOME/.pi/agent/models.json" <<'EOF'
 {
   "providers": {
@@ -578,6 +579,8 @@ chmod 600 "$HOME/.pi/agent/models.json"
 Create `settings.json`:
 
 ```bash
+install -d -m 700 "$HOME/.pi/agent"
+
 cat > "$HOME/.pi/agent/settings.json" <<'EOF'
 {
   "defaultProvider": "nebius-token-factory",
