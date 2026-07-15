@@ -491,19 +491,7 @@ Screen:
 Run inside the server:
 
 ```bash
-mkdir -p "$HOME/.local/share/npm-global"
-npm config set prefix "$HOME/.local/share/npm-global"
-
-case ":$PATH:" in
-  *":$HOME/.local/share/npm-global/bin:"*) ;;
-  *) export PATH="$HOME/.local/share/npm-global/bin:$PATH" ;;
-esac
-
-grep -qxF 'export PATH="$HOME/.local/share/npm-global/bin:$PATH"' "$HOME/.bashrc" \
-  || printf '\nexport PATH="$HOME/.local/share/npm-global/bin:$PATH"\n' >> "$HOME/.bashrc"
-
-npm config get prefix
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+sudo npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 hash -r
 pi --version
 mkdir -p "$HOME/.pi/agent"
@@ -516,11 +504,10 @@ run a coding agent on your laptop and hope it matches the cloud environment.
 The point is to put the assistant in the same server where the rest of the
 build happens."
 
-"Before installing Pi, I configure npm's global install path to live under the
-`fde` user's home folder. Without that, npm may try to write into
-`/usr/lib/node_modules`, which correctly fails for a non-root user. We do not
-fix that with sudo, and we do not run `sudo apt install pi`, because that is a
-different Ubuntu package."
+"Because this is a disposable Nebius Cloud VM, we install VM-level CLI tools
+with `sudo npm install -g`. We still keep pnpm for project dependencies. Do not
+run `sudo apt install pi`; that is a different Ubuntu package, not the Pi Coding
+Agent."
 
 "For model configuration, we point Pi at Token Factory through an
 OpenAI-compatible provider. The API key should come from the environment, not a
@@ -575,8 +562,7 @@ Install GitHub CLI using the official command from the written guide.
 Install Vercel CLI:
 
 ```bash
-npm config get prefix
-npm install -g vercel
+sudo npm install -g vercel
 hash -r
 vercel --version
 ```
