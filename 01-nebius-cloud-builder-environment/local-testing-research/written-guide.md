@@ -149,8 +149,8 @@ Do not paste the key into the repo, chat, slides, or markdown files.
 For this verified local path on macOS, store the key in Keychain:
 
 ```bash
-read -rsp "Paste Nebius Token Factory API key: " NEBIUS_API_KEY
-printf '\n'
+read -r -s -p "Paste Nebius Token Factory API key, then press Enter: " NEBIUS_API_KEY
+printf "\n"
 
 security add-generic-password \
   -a "$USER" \
@@ -173,8 +173,8 @@ If you are on Linux or on the later Nebius VM path, use a current-shell
 environment variable or a secret manager instead:
 
 ```bash
-read -rsp "Paste Nebius Token Factory API key: " NEBIUS_API_KEY
-printf '\n'
+read -r -s -p "Paste Nebius Token Factory API key, then press Enter: " NEBIUS_API_KEY
+printf "\n"
 export NEBIUS_API_KEY
 ```
 

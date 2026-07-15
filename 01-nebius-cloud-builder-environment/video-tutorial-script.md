@@ -429,10 +429,15 @@ Token Factory by changing the base URL, model, and API key."
 Run inside the server:
 
 ```bash
-read -rsp "Nebius Token Factory API key: " NEBIUS_API_KEY
-echo
+read -r -s -p "Paste Nebius Token Factory API key, then press Enter: " NEBIUS_API_KEY
+printf "\n"
 export NEBIUS_API_KEY
-test -n "$NEBIUS_API_KEY" && echo "NEBIUS_API_KEY is loaded"
+
+if [ -n "$NEBIUS_API_KEY" ]; then
+  echo "OK: NEBIUS_API_KEY is loaded for this shell"
+else
+  echo "FAIL: NEBIUS_API_KEY is empty"
+fi
 
 export NEBIUS_TF_MODEL="nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B"
 ```

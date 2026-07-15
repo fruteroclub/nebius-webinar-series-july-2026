@@ -132,8 +132,8 @@ terminal only when a tool needs it.
 Run:
 
 ```bash
-read -rsp "Paste Nebius Token Factory API key: " NEBIUS_API_KEY
-printf '\n'
+read -r -s -p "Paste Nebius Token Factory API key, then press Enter: " NEBIUS_API_KEY
+printf "\n"
 
 security add-generic-password \
   -a "$USER" \

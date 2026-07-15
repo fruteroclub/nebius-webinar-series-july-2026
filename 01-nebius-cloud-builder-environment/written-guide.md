@@ -471,12 +471,25 @@ https://tokenfactory.nebius.com
 
 Then run inside the server:
 
+Copy this command exactly. Do not replace `NEBIUS_API_KEY` with your actual
+key. After you run the command, the terminal will show a prompt; paste the key
+at that prompt and press Enter. The key will not be visible as you type.
+
 ```bash
-read -rsp "Nebius Token Factory API key: " NEBIUS_API_KEY
-echo
+read -r -s -p "Paste Nebius Token Factory API key, then press Enter: " NEBIUS_API_KEY
+printf "\n"
 export NEBIUS_API_KEY
-test -n "$NEBIUS_API_KEY" && echo "NEBIUS_API_KEY is loaded"
+
+if [ -n "$NEBIUS_API_KEY" ]; then
+  echo "OK: NEBIUS_API_KEY is loaded for this shell"
+else
+  echo "FAIL: NEBIUS_API_KEY is empty"
+fi
 ```
+
+Do not paste the key into the command itself. The command ends with the
+variable name `NEBIUS_API_KEY`; the actual key is pasted only after the prompt
+appears.
 
 This keeps the key in the current shell session only. It does not write the
 secret to the repository.
@@ -660,8 +673,8 @@ If browser/device login is awkward on the server, use a temporary token from
 your Vercel account:
 
 ```bash
-read -rsp "Vercel token: " VERCEL_TOKEN
-echo
+read -r -s -p "Paste Vercel token, then press Enter: " VERCEL_TOKEN
+printf "\n"
 export VERCEL_TOKEN
 vercel whoami
 ```
